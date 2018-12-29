@@ -1,28 +1,69 @@
-import React, { Component } from 'react';
+import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+import _ from 'lodash';
+import CreateTodo from './components/ui/create-todo';
+import TodosList from './components/ui/todos-list';
+
+const todos = [
+{
+    task: 'make React tutorial',
+    isCompleted: false
+},
+{
+    task: 'eat dinner',
+    isCompleted: true
+}
+];
+
+export default class App extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            todos
+        };
+    }
+
+    render() {
+        return (
+            <div>
+                <h1>React ToDos App</h1>
+                <CreateTodo todos={this.state.todos} createTask={this.createTask.bind(this)} />
+                <TodosList
+                    todos={this.state.todos}
+                    toggleTask={this.toggleTask.bind(this)}
+                    saveTask={this.saveTask.bind(this)}
+                    deleteTask={this.deleteTask.bind(this)}
+                />
+            </div>
+        );
+    }
+
+    toggleTask(task) {
+        const foundTodo = _.find(this.state.todos, todo => todo.task === task);
+        foundTodo.isCompleted = !foundTodo.isCompleted;
+        this.setState({ todos: this.state.todos });
+    }
+
+    createTask(task) {
+        this.state.todos.push({
+            task,
+            isCompleted: false
+        });
+        this.setState({ todos: this.state.todos });
+    }
+
+    saveTask(oldTask, newTask) {
+        const foundTodo = _.find(this.state.todos, todo => todo.task === oldTask);
+        foundTodo.task = newTask;
+        this.setState({ todos: this.state.todos });
+    }
+
+    deleteTask(taskToDelete) {
+        _.remove(this.state.todos, todo => todo.task === taskToDelete);
+        this.setState({ todos: this.state.todos });
+    }
 }
 
-export default App;
